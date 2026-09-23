@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Script para Cadastro Z8Games</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+        }
+        body {
+            background: #1a2a32;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .card {
+            background: #f5f7fa;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            max-width: 700px;
+            width: 100%;
+            padding: 25px 30px;
+        }
+        h1 {
+            font-size: 1.7rem;
+            color: #1e3c4c;
+            margin-top: 0;
+            margin-bottom: 10px;
+            border-left: 5px solid #ff6d34;
+            padding-left: 15px;
+        }
+        .info {
+            background: #e9ecef;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: #2c5a6e;
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: 600;
+            color: #1e3c4c;
+            display: block;
+            margin-bottom: 6px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 1rem;
+            border: 1px solid #cbd5e0;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #ff6d34;
+            box-shadow: 0 0 0 2px rgba(255,109,52,0.2);
+        }
+        .field-group {
+            margin-bottom: 10px;
+        }
+        .char-count {
+            font-size: 0.75rem;
+            text-align: right;
+            margin-top: -12px;
+            margin-bottom: 15px;
+            color: #5a6e7c;
+        }
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 400;
+            cursor: pointer;
+        }
+        button {
+            background: #ff6d34;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 40px;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 5px;
+        }
+        button:hover {
+            background: #e55a24;
+            transform: scale(0.98);
+        }
+        .btn-secondary {
+            background: #2c5a6e;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            padding: 10px;
+        }
+        .btn-secondary:hover {
+            background: #1e3c4c;
+        }
+        pre {
+            background: #1e2a36;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 14px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            margin: 20px 0 10px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .copy-btn {
+            background: #2c5a6e;
+            margin-top: 0;
+            font-size: 0.9rem;
+            padding: 8px;
+        }
+        .copy-btn:hover {
+            background: #1e3c4c;
+        }
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            margin-top: 20px;
+            color: #7e8c94;
+        }
+        .historico-area {
+            margin-top: 25px;
+            border-top: 2px dashed #cbd5e0;
+            padding-top: 15px;
+        }
+        .historico-toggle {
+            background: none;
+            border: none;
+            color: #1e3c4c;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 5px 0;
+            width: auto;
+            background: transparent;
+        }
+        .historico-toggle:hover {
+            background: transparent;
+            transform: none;
+            color: #ff6d34;
+        }
+        .historico-lista {
+            display: none;
+            margin-top: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .historico-lista.aberto {
+            display: block;
+        }
+        .historico-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .historico-toolbar .dica {
+            font-size: 0.72rem;
+            color: #5a6e7c;
+            flex: 1 1 180px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        th, td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            vertical-align: middle;
+        }
+        th {
+            background: #e9ecef;
+            color: #1e3c4c;
+        }
+        tr.fixado td {
+            background: #fff8ec;
+        }
+        .acoes-col {
+            text-align: center;
+            white-space: nowrap;
+        }
+        .btn-acao {
+            border: none;
+            background: #e9ecef;
+            color: #1e3c4c;
+            border-radius: 8px;
+            padding: 5px 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            line-height: 1;
+            width: auto;
+            margin: 0 1px;
+            transition: 0.15s;
+        }
+        .btn-acao:hover {
+            background: #d3dae0;
+            transform: none;
+        }
+        .btn-acao.fixado {
+            background: #ffd9a0;
+        }
+        .btn-acao.excluir:hover {
+            background: #f5b5bd;
+        }
+        .btn-baixar {
+            background: #2c5a6e;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            width: auto;
+            margin: 0;
+            white-space: nowrap;
+        }
+        .btn-baixar:hover {
+            background: #1e3c4c;
+            transform: none;
+        }
+        .btn-limpar {
+            background: #b02a37;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            width: auto;
+        }
+        .btn-limpar:hover {
+            background: #8f1f2a;
+            transform: none;
+        }
+        .vazio {
+            text-align: center;
+            color: #7e8c94;
+            padding: 15px;
+        }
+        /* Modal de edição */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 25, 32, 0.6);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal-overlay.aberto {
+            display: flex;
+        }
+        .modal {
+            background: #f5f7fa;
+            border-radius: 18px;
+            padding: 22px 24px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+        }
+        .modal h2 {
+            font-size: 1.15rem;
+            color: #1e3c4c;
+            margin-bottom: 15px;
+            border-left: 4px solid #ff6d34;
+            padding-left: 12px;
+        }
+        .modal-acoes {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .modal-acoes button {
+            width: 100%;
+            margin: 0;
+            border: none;
+            border-radius: 30px;
+            padding: 11px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: #fff;
+        }
+        .modal-acoes button:hover {
+            transform: none;
+        }
+        .btn-cancelar { background: #7e8c94; }
+        .btn-cancelar:hover { background: #5f6b72; }
+        .btn-salvar { background: #ff6d34; }
+        .btn-salvar:hover { background: #e55a24; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>🚀 Gerador de script automático</h1>
+    <div class="info">
+        ⚡ Preencha o Login desejado (máx. 12 caracteres). O script gerado fará o cadastro na página da Z8Games quando colado no console.
+    </div>
+
+    <div class="field-group">
+        <label>🔐 Login (ID da conta)</label>
+        <input type="text" id="loginInput" placeholder="Exemplo: MeuLogin12" maxlength="12" autocomplete="off">
+        <div class="char-count" id="loginCounter">0 / 12</div>
+    </div>
+
+    <div class="field-group">
+        <label>🔑 Tipo de senha</label>
+        <div class="radio-group">
+            <label><input type="radio" name="senhaTipo" value="aleatoria" checked> Aleatória (8 caracteres, minúscula, 3 letras + 5 números)</label>
+            <label><input type="radio" name="senhaTipo" value="igual"> Igual ao login</label>
+        </div>
+    </div>
+
+    <div class="info" style="background: #fff0e6;">
+        📝 Regras automáticas:<br>
+        • Senha = conforme escolha acima (sempre minúscula)<br>
+        • Nome do Fórum = <strong>Login com a última letra alterada para o próximo caractere</strong> (ex: Login "Joao" → "Joap")<br>
+        • Resposta secreta = <strong>mesmo valor do Login</strong><br>
+        • Pergunta secreta = "Qual era o nome de sua primeira escola?"
+    </div>
+
+    <button id="generateBtn">✨ Gerar código para o console</button>
+
+    <div id="outputArea" style="display: none;">
+        <pre id="codeOutput"></pre>
+        <button id="copyBtn" class="copy-btn">📋 Copiar código</button>
+    </div>
+
+    <div class="historico-area">
+        <button class="historico-toggle" id="historicoToggle">📜 Histórico de cadastros gerados</button>
+        <div class="historico-lista" id="historicoLista">
+            <div class="historico-toolbar">
+                <span class="dica">📌 = fixado (não é apagado ao limpar o histórico)</span>
+                <button class="btn-baixar" id="baixarTxt">💾 Baixar tudo (.txt)</button>
+            </div>
+            <table id="historicoTabela">
+                <thead>
+                    <tr><th>Login</th><th>Senha</th><th>Nickname</th><th>Data/Hora</th><th>Ações</th></tr>
+                </thead>
+                <tbody id="historicoCorpo">
+                    <!-- preenchido via JS -->
+                </tbody>
+            </table>
+            <button class="btn-limpar" id="limparHistorico">🗑️ Limpar histórico (mantém fixados)</button>
+        </div>
+    </div>
+
+    <footer>
+        Cole o código no console (F12) da página https://br.z8games.com/signup.html e ele preencherá e enviará o formulário.
+    </footer>
+</div>
+
+<!-- Modal de edição -->
+<div class="modal-overlay" id="modalEditar">
+    <div class="modal">
+        <h2>✏️ Editar registro</h2>
+        <label for="editLogin">Login</label>
+        <input type="text" id="editLogin" maxlength="12" autocomplete="off">
+        <label for="editSenha">Senha</label>
+        <input type="text" id="editSenha" autocomplete="off">
+        <label for="editNickname">Nickname</label>
+        <input type="text" id="editNickname" maxlength="13" autocomplete="off">
+        <div class="modal-acoes">
+            <button type="button" class="btn-cancelar" id="cancelarEdicao">Cancelar</button>
+            <button type="button" class="btn-salvar" id="salvarEdicao">💾 Salvar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // Elementos
+        const loginInput = document.getElementById('loginInput');
+        const loginCounter = document.getElementById('loginCounter');
+        const generateBtn = document.getElementById('generateBtn');
+        const outputArea = document.getElementById('outputArea');
+        const codeOutput = document.getElementById('codeOutput');
+        const copyBtn = document.getElementById('copyBtn');
+        const historicoToggle = document.getElementById('historicoToggle');
+        const historicoLista = document.getElementById('historicoLista');
+        const historicoCorpo = document.getElementById('historicoCorpo');
+        const limparHistorico = document.getElementById('limparHistorico');
+        const baixarTxtBtn = document.getElementById('baixarTxt');
+        const radioAleatoria = document.querySelector('input[name="senhaTipo"][value="aleatoria"]');
+        const radioIgual = document.querySelector('input[name="senhaTipo"][value="igual"]');
+        // Modal
+        const modalEditar = document.getElementById('modalEditar');
+        const editLogin = document.getElementById('editLogin');
+        const editSenha = document.getElementById('editSenha');
+        const editNickname = document.getElementById('editNickname');
+        const cancelarEdicao = document.getElementById('cancelarEdicao');
+        const salvarEdicaoBtn = document.getElementById('salvarEdicao');
+
+        // Histórico
+        let historico = [];
+        let editandoId = null;
+
+        /* ---------------- Utilidades ---------------- */
+
+        function gerarId() {
+            return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function ordenarHistorico(lista) {
+            return [...lista].sort((a, b) => {
+                if (!!a.manter !== !!b.manter) return a.manter ? -1 : 1;
+                return b.timestamp - a.timestamp;
+            });
+        }
+
+        /* ---------------- Persistência ---------------- */
+
+        function normalizarHistorico(arr) {
+            if (!Array.isArray(arr)) return [];
+            return arr.filter(x => x && typeof x === 'object').map(x => ({
+                id: x.id || gerarId(),
+                login: String(x.login || ''),
+                senha: String(x.senha || ''),
+                nickname: String(x.nickname || ''),
+                data: x.data || new Date(x.timestamp || Date.now()).toLocaleString('pt-BR'),
+                timestamp: x.timestamp || Date.now(),
+                manter: !!x.manter
+            }));
+        }
+
+        function carregarHistorico() {
+            try {
+                const data = localStorage.getItem('z8_historico');
+                historico = data ? normalizarHistorico(JSON.parse(data)) : [];
+            } catch (e) {
+                historico = [];
+            }
+            renderizarHistorico();
+        }
+
+        function salvarHistorico() {
+            try {
+                localStorage.setItem('z8_historico', JSON.stringify(historico));
+            } catch (e) {
+                console.warn('Não foi possível salvar o histórico:', e);
+            }
+            renderizarHistorico();
+        }
+
+        function adicionarRegistro(login, senha, nickname) {
+            const agora = new Date();
+            historico.push({
+                id: gerarId(),
+                login,
+                senha,
+                nickname,
+                data: agora.toLocaleString('pt-BR'),
+                timestamp: agora.getTime(),
+                manter: false
+            });
+            if (historico.length > 100) historico.shift();
+            salvarHistorico();
+        }
+
+        /* ---------------- Render ---------------- */
+
+        function atualizarTextoBotaoHistorico() {
+            const aberto = historicoLista.classList.contains('aberto');
+            const contagem = historico.length ? ` (${historico.length})` : '';
+            historicoToggle.textContent = (aberto ? '📜 Ocultar histórico' : '📜 Histórico de cadastros gerados') + contagem;
+        }
+
+        function renderizarHistorico() {
+            if (historico.length === 0) {
+                historicoCorpo.innerHTML = '<tr><td colspan="5" class="vazio">Nenhum cadastro gerado ainda.</td></tr>';
+                atualizarTextoBotaoHistorico();
+                return;
+            }
+
+            const ordenado = ordenarHistorico(historico);
+            let html = '';
+            for (const item of ordenado) {
+                html += `<tr class="${item.manter ? 'fixado' : ''}">
+                    <td>${escapeHtml(item.login)}</td>
+                    <td>${escapeHtml(item.senha)}</td>
+                    <td>${escapeHtml(item.nickname)}</td>
+                    <td>${escapeHtml(item.data)}</td>
+                    <td class="acoes-col">
+                        <button class="btn-acao copiar" data-id="${item.id}" title="Copiar login:senha">📋</button>
+                        <button class="btn-acao editar" data-id="${item.id}" title="Editar registro">✏️</button>
+                        <button class="btn-acao fixar ${item.manter ? 'fixado' : ''}" data-id="${item.id}"
+                            title="${item.manter ? 'Desafixar' : 'Fixar (não é apagado ao limpar)'}">${item.manter ? '📌' : '📍'}</button>
+                        <button class="btn-acao excluir" data-id="${item.id}" title="Excluir registro">🗑️</button>
+                    </td>
+                </tr>`;
+            }
+            historicoCorpo.innerHTML = html;
+            atualizarTextoBotaoHistorico();
+        }
+
+        /* ---------------- Ações da tabela ---------------- */
+
+        historicoCorpo.addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn-acao');
+            if (!btn) return;
+
+            const id = btn.getAttribute('data-id');
+            const idx = historico.findIndex(i => i.id === id);
+            if (idx === -1) return;
+
+            // Copiar login:senha
+            if (btn.classList.contains('copiar')) {
+                const texto = historico[idx].login + ':' + historico[idx].senha;
+                navigator.clipboard.writeText(texto).then(() => {
+                    const original = btn.textContent;
+                    btn.textContent = '✅';
+                    setTimeout(() => { btn.textContent = original; }, 1200);
+                }).catch(() => {
+                    alert('Não foi possível copiar. Selecione manualmente.');
+                });
+                return;
+            }
+
+            // Editar
+            if (btn.classList.contains('editar')) {
+                abrirEdicao(idx);
+                return;
+            }
+
+            // Fixar / desafixar
+            if (btn.classList.contains('fixar')) {
+                historico[idx].manter = !historico[idx].manter;
+                salvarHistorico();
+                return;
+            }
+
+            // Excluir
+            if (btn.classList.contains('excluir')) {
+                const item = historico[idx];
+                if (confirm(`Excluir o registro "${item.login}"?`)) {
+                    historico.splice(idx, 1);
+                    salvarHistorico();
+                }
+            }
+        });
+
+        /* ---------------- Modal de edição ---------------- */
+
+        function abrirEdicao(idx) {
+            const item = historico[idx];
+            editandoId = item.id;
+            editLogin.value = item.login;
+            editSenha.value = item.senha;
+            editNickname.value = item.nickname;
+            modalEditar.classList.add('aberto');
+            editLogin.focus();
+            editLogin.select();
+        }
+
+        function fecharEdicao() {
+            modalEditar.classList.remove('aberto');
+            editandoId = null;
+        }
+
+        function salvarEdicao() {
+            if (!editandoId) return;
+            const idx = historico.findIndex(i => i.id === editandoId);
+            if (idx === -1) { fecharEdicao(); return; }
+
+            historico[idx].login = editLogin.value.trim() || historico[idx].login;
+            historico[idx].senha = editSenha.value.trim() || historico[idx].senha;
+            historico[idx].nickname = editNickname.value.trim() || historico[idx].nickname;
+
+            fecharEdicao();
+            salvarHistorico();
+        }
+
+        salvarEdicaoBtn.addEventListener('click', salvarEdicao);
+        cancelarEdicao.addEventListener('click', fecharEdicao);
+
+        modalEditar.addEventListener('click', function(e) {
+            if (e.target === modalEditar) fecharEdicao();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (!modalEditar.classList.contains('aberto')) return;
+            if (e.key === 'Escape') fecharEdicao();
+            if (e.key === 'Enter') salvarEdicao();
+        });
+
+        /* ---------------- Download .txt ---------------- */
+
+        function baixarHistoricoTxt() {
+            if (historico.length === 0) {
+                alert('Nenhum registro no histórico para baixar.');
+                return;
+            }
+
+            const ordenado = ordenarHistorico(historico);
+            const linhas = [];
+            linhas.push('================================================');
+            linhas.push('   HISTÓRICO DE CADASTROS - Z8GAMES');
+            linhas.push('================================================');
+            linhas.push('Gerado em: ' + new Date().toLocaleString('pt-BR'));
+            linhas.push('Total de registros: ' + ordenado.length);
+            linhas.push('');
+
+            ordenado.forEach((item, i) => {
+                linhas.push('#' + (i + 1) + (item.manter ? '  [FIXADO]' : ''));
+                linhas.push('Login:        ' + item.login);
+                linhas.push('Senha:        ' + item.senha);
+                linhas.push('Nickname:     ' + item.nickname);
+                linhas.push('Data/Hora:    ' + item.data);
+                linhas.push('Login:Senha   ' + item.login + ':' + item.senha);
+                linhas.push('------------------------------------------------');
+            });
+
+            // \ufeff = BOM, ajuda o Bloco de Notas a reconhecer acentos
+            const blob = new Blob(['\ufeff' + linhas.join('\r\n')], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const agora = new Date();
+            const stamp = agora.getFullYear() + '-' +
+                String(agora.getMonth() + 1).padStart(2, '0') + '-' +
+                String(agora.getDate()).padStart(2, '0') + '_' +
+                String(agora.getHours()).padStart(2, '0') + '-' +
+                String(agora.getMinutes()).padStart(2, '0');
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'historico_z8games_' + stamp + '.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+
+        baixarTxtBtn.addEventListener('click', baixarHistoricoTxt);
+
+        /* ---------------- Contador login ---------------- */
+
+        loginInput.addEventListener('input', function() {
+            let val = this.value;
+            if (val.length > 12) {
+                val = val.slice(0, 12);
+                this.value = val;
+            }
+            loginCounter.textContent = `${val.length} / 12`;
+        });
+
+        /* ---------------- Regras de geração ---------------- */
+
+        function alterarUltimaLetra(str) {
+            if (str.length === 0) return str;
+            let lastChar = str[str.length - 1];
+            let nextChar;
+            if (/[a-zA-Z]/.test(lastChar)) {
+                let code = lastChar.charCodeAt(0);
+                let isUpper = (code >= 65 && code <= 90);
+                let isLower = (code >= 97 && code <= 122);
+                if (isUpper) {
+                    nextChar = code === 90 ? 'A' : String.fromCharCode(code + 1);
+                } else if (isLower) {
+                    nextChar = code === 122 ? 'a' : String.fromCharCode(code + 1);
+                } else {
+                    nextChar = lastChar;
+                }
+            } else if (/[0-9]/.test(lastChar)) {
+                let num = parseInt(lastChar, 10);
+                nextChar = (num === 9) ? '0' : String(num + 1);
+            } else {
+                nextChar = lastChar;
+            }
+            return str.slice(0, -1) + nextChar;
+        }
+
+        function gerarSenhaAleatoria() {
+            const letras = 'abcdefghijklmnopqrstuvwxyz';
+            const numeros = '0123456789';
+            let senha = '';
+            for (let i = 0; i < 3; i++) {
+                senha += letras.charAt(Math.floor(Math.random() * letras.length));
+            }
+            for (let i = 0; i < 5; i++) {
+                senha += numeros.charAt(Math.floor(Math.random() * numeros.length));
+            }
+            senha = senha.split('').sort(() => Math.random() - 0.5).join('');
+            return senha;
+        }
+
+        function escapeJS(str) {
+            return str.replace(/\\/g, '\\\\')
+                      .replace(/'/g, "\\'")
+                      .replace(/"/g, '\\"')
+                      .replace(/\n/g, '\\n')
+                      .replace(/\r/g, '\\r');
+        }
+
+        /* ---------------- Preferência do radio ---------------- */
+
+        function salvarPreferenciaRadio(valor) {
+            localStorage.setItem('z8_tipo_senha', valor);
+        }
+
+        function carregarPreferenciaRadio() {
+            const valor = localStorage.getItem('z8_tipo_senha');
+            if (valor === 'igual') {
+                radioIgual.checked = true;
+                radioAleatoria.checked = false;
+            } else {
+                radioAleatoria.checked = true;
+                radioIgual.checked = false;
+                if (!valor) salvarPreferenciaRadio('aleatoria');
+            }
+        }
+
+        radioAleatoria.addEventListener('change', function() {
+            if (this.checked) salvarPreferenciaRadio('aleatoria');
+        });
+        radioIgual.addEventListener('change', function() {
+            if (this.checked) salvarPreferenciaRadio('igual');
+        });
+
+        /* ---------------- Gerar script ---------------- */
+
+        generateBtn.addEventListener('click', function() {
+            let login = loginInput.value.trim();
+            if (login === "") {
+                alert("Digite um login primeiro!");
+                return;
+            }
+            if (login.length > 12) {
+                login = login.slice(0, 12);
+                loginInput.value = login;
+            }
+
+            const tipo = document.querySelector('input[name="senhaTipo"]:checked').value;
+            let senha;
+            if (tipo === 'aleatoria') {
+                senha = gerarSenhaAleatoria();
+            } else {
+                senha = login.toLowerCase();
+            }
+
+            let nickname = alterarUltimaLetra(login);
+            if (nickname.length > 13) nickname = nickname.slice(0, 13);
+            const secretAnswer = login;
+
+            adicionarRegistro(login, senha, nickname);
+
+            const script = `
+(function() {
+    var login = "${escapeJS(login)}";
+    var senha = "${escapeJS(senha)}";
+    var nickname = "${escapeJS(nickname)}";
+    var respostaSecreta = "${escapeJS(secretAnswer)}";
+
+    $('#userid').val(login).trigger('input');
+    $('#password').val(senha).trigger('input');
+    $('#confirmpwd').val(senha).trigger('input');
+    $('#nickname').val(nickname).trigger('input');
+    $('#secretqansw').val(respostaSecreta).trigger('input');
+
+    $('#secretq').val('9').selectmenu('refresh');
+    $('#secretq-button .ui-selectmenu-text').text($('#secretq option:selected').text());
+
+    $('#signup-form, #signup-button').prop('disabled', false);
+    $('#signup-button').removeAttr('disabled');
+
+    setTimeout(function() {
+        $('#signup-button').click();
+        console.log("✅ Cadastro automático iniciado!");
+        console.log("Login:", login);
+        console.log("Nickname:", nickname);
+    }, 300);
+})();
+            `;
+
+            codeOutput.textContent = script;
+            outputArea.style.display = 'block';
+        });
+
+        copyBtn.addEventListener('click', function() {
+            const text = codeOutput.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("✅ Código copiado! Cole no console da página de cadastro.");
+            }).catch(() => {
+                alert("Não foi possível copiar, selecione manualmente e copie.");
+            });
+        });
+
+        /* ---------------- Histórico: abrir/fechar e limpar ---------------- */
+
+        historicoToggle.addEventListener('click', function() {
+            historicoLista.classList.toggle('aberto');
+            atualizarTextoBotaoHistorico();
+        });
+
+        limparHistorico.addEventListener('click', function() {
+            const fixados = historico.filter(i => i.manter).length;
+            const msg = fixados > 0
+                ? `Existem ${fixados} registro(s) fixado(s) que serão mantidos.\nDeseja apagar os demais?`
+                : 'Tem certeza que deseja limpar todo o histórico?';
+            if (!confirm(msg)) return;
+
+            historico = historico.filter(i => i.manter);
+            salvarHistorico();
+        });
+
+        /* ---------------- Inicializar ---------------- */
+
+        carregarPreferenciaRadio();
+        carregarHistorico();
+    })();
+</script>
+</body>
+</html>
